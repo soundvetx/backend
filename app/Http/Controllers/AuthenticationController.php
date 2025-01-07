@@ -44,7 +44,7 @@ class AuthenticationController extends Controller
 
     public function signOut(Request $request)
     {
-        $this->authenticationService->signOut($request->user());
+        $this->authenticationService->signOut();
 
         return response()->json([
             'message' => [

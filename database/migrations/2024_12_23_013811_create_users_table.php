@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('password');
             $table->boolean('can_send_whatsapp')->default(false);
             $table->string('type')->default('veterinarian');
+            $table->boolean('is_active')->default(true);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

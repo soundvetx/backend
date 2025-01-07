@@ -2,21 +2,21 @@
 
 namespace App\Services;
 
-use App\Enums\UserTypeEnum;
 use App\Exceptions\ValidationException;
 use App\Models\User;
-use App\Repositories\UserRepository;
+use App\Utils\Authentication;
 use App\Utils\ExceptionMessage;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AuthenticationService
 {
-    private UserRepository $userRepository;
+    private $userService;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserService $userService)
     {
-        $this->userRepository = $userRepository;
+        $this->userService = $userService;
     }
 
     public function signUp(array $parameters)
@@ -34,16 +34,7 @@ class AuthenticationService
             ]));
         }
 
-        $user = $this->userRepository->create([
-            'name' => $parameters['name'],
-            'email' => $parameters['email'],
-            'password' => Hash::make($parameters['password']),
-            'type' => $parameters['type'],
-            'crmv' => $parameters['crmv'] ?? null,
-            'uf' => $parameters['uf'] ?? null,
-        ]);
-
-        return $user;
+        return $this->userService->create($parameters);
     }
 
     public function signIn(array $parameters)
@@ -54,7 +45,7 @@ class AuthenticationService
             throw ValidationException::validator($validator, $this->getErrorCodes('signIn'));
         }
 
-        $user = $this->userRepository->findByEmail($parameters['email']);
+        $user = $this->userService->findByEmail($parameters['email']);
 
         if (!$user || !Hash::check($parameters['password'], $user->password)) {
             throw new ValidationException('email_password', 'ER001', new ExceptionMessage([
@@ -78,8 +69,14 @@ class AuthenticationService
         return [$user, $token];
     }
 
-    public function signOut(User $user)
+    public function signOut()
     {
+        $user = Authentication::user();
+
+        if (!$user) {
+            return false;
+        }
+
         return $user->tokens()
             ->where('id_personal_access_token', $user->currentAccessToken()->id_personal_access_token)
             ->delete();
@@ -89,24 +86,6 @@ class AuthenticationService
     {
         return match ($method) {
             'signUp' => [
-                'type' => [
-                    'required',
-                    'in:' . implode(',', array_map(fn($type) => $type->value, UserTypeEnum::cases())),
-                ],
-                'name' => [
-                    'required',
-                ],
-                'crmv' => [
-                    'required_if:type,' . UserTypeEnum::VETERINARIAN->value,
-                ],
-                'uf' => [
-                    'required_if:type,' . UserTypeEnum::VETERINARIAN->value,
-                    'size:2',
-                ],
-                'email' => [
-                    'required',
-                    'email',
-                ],
                 'password' => [
                     'required',
                 ],
@@ -131,14 +110,6 @@ class AuthenticationService
     {
         return match ($method) {
             'signUp' => [
-                'type.required' => 'ER001',
-                'type.in' => 'ER001',
-                'name.required' => 'ER001',
-                'crmv.required_if' => 'ER001',
-                'uf.required_if' => 'ER001',
-                'uf.size' => 'ER001',
-                'email.required' => 'ER001',
-                'email.email' => 'ER001',
                 'password.required' => 'ER001',
                 'confirmPassword.required' => 'ER001',
             ],

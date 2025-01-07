@@ -28,4 +28,29 @@ class Transformer
 
         return $result;
     }
+
+    public static function snakeToCamelCase(array|string $data): array|string
+    {
+        if (is_string($data)) {
+            return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $data))));
+        }
+
+        $result = [];
+
+        foreach ($data as $key => $value) {
+            if (is_numeric($key)) {
+                $result[$key] = self::snakeToCamelCase($value);
+                continue;
+            }
+
+            if (is_array($value)) {
+                $value = self::snakeToCamelCase($value);
+            }
+
+            $camelCaseKey = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $key))));
+            $result[$camelCaseKey] = $value;
+        }
+
+        return $result;
+    }
 }
