@@ -42,19 +42,39 @@ class AuthenticationService
             'uf' => $parameters['uf'] ?? null,
         ]);
 
-        // $tokenDetails = [
-        //     'name' => 'authentication',
-        //     'abilities' => ['*'],
-        //     'expires_at' => now()->addDays(1),
-        // ];
-
-        // $token = $user->createToken(
-        //     $tokenDetails['name'],
-        //     $tokenDetails['abilities'],
-        //     $tokenDetails['expires_at'],
-        // )->plainTextToken;
-
         return $user;
+    }
+
+    public function signIn(array $parameters)
+    {
+        $validator = Validator::make($parameters, $this->getValidations('signIn'));
+
+        if ($validator->fails()) {
+            throw ValidationException::validator($validator, $this->getErrorCodes('signIn'));
+        }
+
+        $user = $this->userRepository->findByEmail($parameters['email']);
+
+        if (!$user || !Hash::check($parameters['password'], $user->password)) {
+            throw new ValidationException('email_password', 'ER001', new ExceptionMessage([
+                'server' => 'The provided credentials are incorrect.',
+                'client' => 'As credenciais fornecidas estão incorretas.',
+            ]));
+        }
+
+        $tokenDetails = [
+            'name' => 'authentication',
+            'abilities' => ['*'],
+            'expires_at' => now()->addDays(1),
+        ];
+
+        $token = $user->createToken(
+            $tokenDetails['name'],
+            $tokenDetails['abilities'],
+            $tokenDetails['expires_at'],
+        )->plainTextToken;
+
+        return [$user, $token];
     }
 
     private function getValidations(string $method)

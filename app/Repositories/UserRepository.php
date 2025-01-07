@@ -32,4 +32,9 @@ class UserRepository
 
         return $user;
     }
+
+    public function findByEmail(string $email): ?User
+    {
+        return User::where('email', $email)->first();
+    }
 }

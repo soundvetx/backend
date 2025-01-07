@@ -5,4 +5,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
     Route::post('/sign-up', [AuthenticationController::class, 'signUp']);
+    Route::post('/sign-in', [AuthenticationController::class, 'signIn']);
 });

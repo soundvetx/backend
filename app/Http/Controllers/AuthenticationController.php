@@ -27,4 +27,18 @@ class AuthenticationController extends Controller
             'user' => new UserResource($user),
         ]);
     }
+
+    public function signIn(Request $request)
+    {
+        [$user, $token] = $this->authenticationService->signIn($request->all());
+
+        return response()->json([
+            'message' => [
+                'serverMessage' => 'User authenticated successfully.',
+                'clientMessage' => 'Usuário autenticado com sucesso.',
+            ],
+            'user' => new UserResource($user),
+            'token' => $token,
+        ]);
+    }
 }
