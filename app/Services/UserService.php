@@ -67,7 +67,7 @@ class UserService
         $parameters = Transformer::camelToSnakeCase($parameters);
         $authUser = Authentication::user();
 
-        if ($authUser->type === UserTypeEnum::VETERINARIAN->value && $authUser->id_user !== $parameters['id_user']) {
+        if ($authUser->type === UserTypeEnum::VETERINARIAN->value && $authUser->id_user != $parameters['id_user']) {
             throw new BaseException('ER002');
         }
 
@@ -83,7 +83,7 @@ class UserService
         if (array_key_exists('email', $parameters)) {
             $existingUser = $this->userRepository->findByEmail($parameters['email']);
 
-            if ($existingUser && $existingUser->id_user !== $parameters['id_user']) {
+            if ($existingUser && $existingUser->id_user != $parameters['id_user']) {
                 throw new ValidationException('email', 'ER001', new ExceptionMessage([
                     'server' => 'The email has already been taken.',
                     'client' => 'O e-mail já foi utilizado.',
@@ -132,7 +132,7 @@ class UserService
 
         $authUser = Authentication::user();
 
-        if ($authUser->type === UserTypeEnum::VETERINARIAN->value && $authUser->id_user !== $parameters['idUser']) {
+        if ($authUser->type === UserTypeEnum::VETERINARIAN->value && $authUser->id_user != $parameters['idUser']) {
             throw new BaseException('ER002');
         }
 
@@ -220,7 +220,7 @@ class UserService
 
         $authUser = Authentication::user();
 
-        if ($authUser->id_user !== $parameters['idUser']) {
+        if ($authUser->id_user != $parameters['idUser']) {
             throw new BaseException('ER002');
         }
 

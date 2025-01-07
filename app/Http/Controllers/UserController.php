@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Services;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -44,7 +45,9 @@ class UserController extends Controller
 
     public function delete($idUser)
     {
-        $this->userService->delete($idUser);
+        $this->userService->delete([
+            'idUser' => $idUser,
+        ]);
 
         return response()->json([
             'message' => [
@@ -56,7 +59,9 @@ class UserController extends Controller
 
     public function restore($idUser)
     {
-        $this->userService->restore($idUser);
+        $this->userService->restore([
+            'idUser' => $idUser,
+        ]);
 
         return response()->json([
             'message' => [
@@ -68,7 +73,9 @@ class UserController extends Controller
 
     public function canSendWhatsapp($idUser)
     {
-        $this->userService->canSendWhatsapp($idUser);
+        $this->userService->canSendWhatsapp([
+            'idUser' => $idUser,
+        ]);
 
         return response()->json([
             'message' => [
@@ -93,7 +100,9 @@ class UserController extends Controller
 
     public function resetPassword($idUser)
     {
-        [$user, $newPassword] = $this->userService->resetPassword($idUser);
+        [$user, $newPassword] = $this->userService->resetPassword([
+            'idUser' => $idUser,
+        ]);
 
         return response()->json([
             'message' => [

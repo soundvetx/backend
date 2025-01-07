@@ -1,8 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\UserController;
+use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\EnsureParametersCase;
-use App\Services\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(EnsureParametersCase::class)->group(function () {
@@ -10,12 +11,12 @@ Route::middleware(EnsureParametersCase::class)->group(function () {
         Route::post('/sign-up', [AuthenticationController::class, 'signUp']);
         Route::post('/sign-in', [AuthenticationController::class, 'signIn']);
 
-        Route::middleware('auth:sanctum')->group(function () {
+        Route::middleware(Authenticate::class)->group(function () {
             Route::post('/sign-out', [AuthenticationController::class, 'signOut']);
         });
     });
 
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(Authenticate::class)->group(function () {
         Route::prefix('users')->group(function () {
             Route::post('/', [UserController::class, 'create']);
             Route::put('/{idUser}', [UserController::class, 'update']);

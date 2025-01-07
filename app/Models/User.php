@@ -19,6 +19,7 @@ class User extends Authenticatable
         'password',
         'can_send_whatsapp',
         'type',
+        'is_active',
         'created_by',
         'updated_by',
     ];

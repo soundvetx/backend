@@ -42,7 +42,7 @@ class AuthenticationController extends Controller
         ]);
     }
 
-    public function signOut(Request $request)
+    public function signOut()
     {
         $this->authenticationService->signOut();
 

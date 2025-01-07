@@ -102,7 +102,7 @@ class UserRepository
 
     public function restore(array $parameters): bool
     {
-        $user = $this->find($parameters['id_user']);
+        $user = $this->findRaw($parameters['id_user']);
 
         return $user->update([
             'is_active' => 1,

@@ -24,6 +24,7 @@ class UserResource extends JsonResource
                 'type' => $this->type,
                 'crmv' => $this->veterinarian->crmv,
                 'uf' => $this->veterinarian->uf,
+                'isActive' => $this->is_active === 1,
             ];
         }
 
@@ -33,6 +34,7 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'canSendWhatsapp' => $this->can_send_whatsapp === 1,
             'type' => $this->type,
+            'isActive' => $this->is_active === 1,
         ];
     }
 }
