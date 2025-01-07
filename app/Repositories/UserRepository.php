@@ -57,7 +57,7 @@ class UserRepository
                 ])
             );
 
-            if ($parameters['type'] === UserTypeEnum::VETERINARIAN->value) {
+            if (array_key_exists('type', $parameters) && $parameters['type'] === UserTypeEnum::VETERINARIAN->value) {
                 if (!$user->veterinarian) {
                     $user->veterinarian()->create([
                         'crmv' => $parameters['crmv'],

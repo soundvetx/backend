@@ -11,4 +11,9 @@ class Authentication
     {
         return Auth::user();
     }
+
+    public static function randomPassword(): string
+    {
+        return substr(str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 8);
+    }
 }

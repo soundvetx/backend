@@ -65,4 +65,42 @@ class UserController extends Controller
             ],
         ]);
     }
+
+    public function canSendWhatsapp($idUser)
+    {
+        $this->userService->canSendWhatsapp($idUser);
+
+        return response()->json([
+            'message' => [
+                'serverMessage' => 'User updated successfully.',
+                'clientMessage' => 'Usuário atualizado com sucesso.',
+            ],
+        ]);
+    }
+
+    public function changePassword(Request $request, $idUser)
+    {
+        $request->merge(['idUser' => $idUser]);
+        $this->userService->changePassword($request->all());
+
+        return response()->json([
+            'message' => [
+                'serverMessage' => 'Password changed successfully.',
+                'clientMessage' => 'Senha alterada com sucesso.',
+            ],
+        ]);
+    }
+
+    public function resetPassword($idUser)
+    {
+        [$user, $newPassword] = $this->userService->resetPassword($idUser);
+
+        return response()->json([
+            'message' => [
+                'serverMessage' => 'Password reset successfully.',
+                'clientMessage' => 'Senha resetada com sucesso.',
+            ],
+            'newPassword' => $newPassword,
+        ]);
+    }
 }

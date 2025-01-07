@@ -71,10 +71,19 @@ class UserService
             throw new BaseException('ER002');
         }
 
-        if (array_key_exists('email', $parameters)) {
-            $user = $this->userRepository->findByEmail($parameters['email']);
+        $user = $this->userRepository->find($parameters['id_user']);
 
-            if ($user && $user->id_user !== $parameters['id_user']) {
+        if (!$user) {
+            throw new ResourceNotFoundException('user', new ExceptionMessage([
+                'server' => 'User not found.',
+                'client' => 'Usuário não encontrado.',
+            ]));
+        }
+
+        if (array_key_exists('email', $parameters)) {
+            $existingUser = $this->userRepository->findByEmail($parameters['email']);
+
+            if ($existingUser && $existingUser->id_user !== $parameters['id_user']) {
                 throw new ValidationException('email', 'ER001', new ExceptionMessage([
                     'server' => 'The email has already been taken.',
                     'client' => 'O e-mail já foi utilizado.',
@@ -87,8 +96,6 @@ class UserService
         }
 
         if (array_key_exists('type', $parameters)) {
-            $user = $this->userRepository->find($parameters['id_user']);
-
             if ($user->type !== UserTypeEnum::VETERINARIAN->value && $parameters['type'] === UserTypeEnum::VETERINARIAN->value) {
                 if (!array_key_exists('crmv', $parameters)) {
                     throw new ValidationException('crmv', 'ER001', new ExceptionMessage([
@@ -173,6 +180,114 @@ class UserService
         ]);
     }
 
+    public function canSendWhatsapp(array $parameters)
+    {
+        $validator = Validator::make($parameters, $this->getValidations('canSendWhatsapp'));
+
+        if ($validator->fails()) {
+            throw ValidationException::validator($validator, $this->getErrorCodes('canSendWhatsapp'));
+        }
+
+        $authUser = Authentication::user();
+
+        if ($authUser->type === UserTypeEnum::VETERINARIAN->value) {
+            throw new BaseException('ER002');
+        }
+
+        $user = $this->userRepository->find($parameters['idUser']);
+
+        if (!$user) {
+            throw new ResourceNotFoundException('user', new ExceptionMessage([
+                'server' => 'User not found.',
+                'client' => 'Usuário não encontrado.',
+            ]));
+        }
+
+        return $this->userRepository->update([
+            'id_user' => $parameters['idUser'],
+            'can_send_whatsapp' => !$user->can_send_whatsapp,
+            'updated_by' => $authUser->id_user,
+        ]);
+    }
+
+    public function changePassword(array $parameters)
+    {
+        $validator = Validator::make($parameters, $this->getValidations('changePassword'));
+
+        if ($validator->fails()) {
+            throw ValidationException::validator($validator, $this->getErrorCodes('changePassword'));
+        }
+
+        $authUser = Authentication::user();
+
+        if ($authUser->id_user !== $parameters['idUser']) {
+            throw new BaseException('ER002');
+        }
+
+        $user = $this->userRepository->find($parameters['idUser']);
+
+        if (!$user) {
+            throw new ResourceNotFoundException('user', new ExceptionMessage([
+                'server' => 'User not found.',
+                'client' => 'Usuário não encontrado.',
+            ]));
+        }
+
+        if (!Hash::check($parameters['currentPassword'], $user->password)) {
+            throw new ValidationException('currentPassword', 'ER001', new ExceptionMessage([
+                'server' => 'The current password is incorrect.',
+                'client' => 'A senha atual está incorreta.',
+            ]));
+        }
+
+        if ($parameters['newPassword'] !== $parameters['confirmPassword']) {
+            throw new ValidationException('confirmPassword', 'ER001', new ExceptionMessage([
+                'server' => 'The password confirmation does not match.',
+                'client' => 'A confirmação da senha não coincide.',
+            ]));
+        }
+
+        return $this->userRepository->update([
+            'id_user' => $parameters['idUser'],
+            'password' => Hash::make($parameters['newPassword']),
+            'updated_by' => $authUser->id_user,
+        ]);
+    }
+
+    public function resetPassword(array $parameters)
+    {
+        $validator = Validator::make($parameters, $this->getValidations('resetPassword'));
+
+        if ($validator->fails()) {
+            throw ValidationException::validator($validator, $this->getErrorCodes('resetPassword'));
+        }
+
+        $authUser = Authentication::user();
+
+        if ($authUser->type === UserTypeEnum::VETERINARIAN->value) {
+            throw new BaseException('ER002');
+        }
+
+        $user = $this->userRepository->find($parameters['idUser']);
+
+        if (!$user) {
+            throw new ResourceNotFoundException('user', new ExceptionMessage([
+                'server' => 'User not found.',
+                'client' => 'Usuário não encontrado.',
+            ]));
+        }
+
+        $newPassword = Authentication::randomPassword();
+
+        $user = $this->userRepository->update([
+            'id_user' => $parameters['idUser'],
+            'password' => Hash::make($newPassword),
+            'updated_by' => $authUser->id_user,
+        ]);
+
+        return [$user, $newPassword];
+    }
+
     public function findByEmail(string $email)
     {
         return $this->userRepository->findByEmail($email);
@@ -243,6 +358,33 @@ class UserService
                     'integer',
                 ],
             ],
+            'canSendWhatsapp' => [
+                'idUser' => [
+                    'required',
+                    'integer',
+                ],
+            ],
+            'changePassword' => [
+                'idUser' => [
+                    'required',
+                    'integer',
+                ],
+                'currentPassword' => [
+                    'required',
+                ],
+                'newPassword' => [
+                    'required',
+                ],
+                'confirmPassword' => [
+                    'required',
+                ],
+            ],
+            'resetPassword' => [
+                'idUser' => [
+                    'required',
+                    'integer',
+                ],
+            ],
             default => [],
         };
     }
@@ -273,6 +415,21 @@ class UserService
                 'idUser.integer' => 'ER001',
             ],
             'restore' => [
+                'idUser.required' => 'ER001',
+                'idUser.integer' => 'ER001',
+            ],
+            'canSendWhatsapp' => [
+                'idUser.required' => 'ER001',
+                'idUser.integer' => 'ER001',
+            ],
+            'changePassword' => [
+                'idUser.required' => 'ER001',
+                'idUser.integer' => 'ER001',
+                'currentPassword.required' => 'ER001',
+                'newPassword.required' => 'ER001',
+                'confirmPassword.required' => 'ER001',
+            ],
+            'resetPassword' => [
                 'idUser.required' => 'ER001',
                 'idUser.integer' => 'ER001',
             ],
