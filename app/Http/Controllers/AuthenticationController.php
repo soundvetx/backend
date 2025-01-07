@@ -41,4 +41,16 @@ class AuthenticationController extends Controller
             'token' => $token,
         ]);
     }
+
+    public function signOut(Request $request)
+    {
+        $this->authenticationService->signOut($request->user());
+
+        return response()->json([
+            'message' => [
+                'serverMessage' => 'User logged out successfully.',
+                'clientMessage' => 'Usuário deslogado com sucesso.',
+            ],
+        ]);
+    }
 }

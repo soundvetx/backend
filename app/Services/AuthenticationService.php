@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\UserTypeEnum;
 use App\Exceptions\ValidationException;
+use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Utils\ExceptionMessage;
 use Illuminate\Support\Facades\Hash;
@@ -75,6 +76,13 @@ class AuthenticationService
         )->plainTextToken;
 
         return [$user, $token];
+    }
+
+    public function signOut(User $user)
+    {
+        return $user->tokens()
+            ->where('id_personal_access_token', $user->currentAccessToken()->id_personal_access_token)
+            ->delete();
     }
 
     private function getValidations(string $method)

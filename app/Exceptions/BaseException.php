@@ -22,7 +22,7 @@ class BaseException extends Exception
 
         $this->errorCode = $error['error_code'];
         $this->title = $error['title'];
-        $this->exceptionMessage = new ExceptionMessage($error['message']);
+        $this->exceptionMessage = $exceptionMessage ?? new ExceptionMessage($error['message']);
         $this->httpStatusCode = $error['http_status_code'];
 
         parent::__construct($this->exceptionMessage->getServerMessage(), $this->httpStatusCode);
