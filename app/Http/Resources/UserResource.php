@@ -17,24 +17,24 @@ class UserResource extends JsonResource
     {
         if ($this->type === UserTypeEnum::VETERINARIAN->value) {
             return [
-                'idUser' => $this->id_user,
+                'id' => $this->id_user,
                 'name' => $this->name,
                 'email' => $this->email,
-                'canSendWhatsapp' => $this->can_send_whatsapp === 1,
+                'canSendWhatsapp' => $this->can_send_whatsapp == 1,
                 'type' => $this->type,
                 'crmv' => $this->veterinarian->crmv,
                 'uf' => $this->veterinarian->uf,
-                'isActive' => $this->is_active === 1,
+                'isActive' => $this->is_active == 1,
             ];
         }
 
         return [
-            'idUser' => $this->id_user,
+            'id' => $this->id_user,
             'name' => $this->name,
             'email' => $this->email,
-            'canSendWhatsapp' => $this->can_send_whatsapp === 1,
+            'canSendWhatsapp' => $this->can_send_whatsapp == 1,
             'type' => $this->type,
-            'isActive' => $this->is_active === 1,
+            'isActive' => $this->is_active == 1,
         ];
     }
 }

@@ -18,6 +18,9 @@ Route::middleware(EnsureParametersCase::class)->group(function () {
 
     Route::middleware(Authenticate::class)->group(function () {
         Route::prefix('users')->group(function () {
+            Route::get('/me', [UserController::class, 'findMe']);
+            Route::get('/', [UserController::class, 'findAll']);
+            Route::get('/{idUser}', [UserController::class, 'find']);
             Route::post('/', [UserController::class, 'create']);
             Route::put('/{idUser}', [UserController::class, 'update']);
             Route::delete('/{idUser}', [UserController::class, 'delete']);

@@ -7,6 +7,7 @@ use App\Exceptions\BaseException;
 use App\Models\User;
 use App\Utils\ExceptionMessage;
 use Exception;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class UserRepository
@@ -41,6 +42,7 @@ class UserRepository
             ]));
         }
 
+        $user->refresh();
         return $user;
     }
 
@@ -87,6 +89,7 @@ class UserRepository
             ]));
         }
 
+        $user->refresh();
         return $user;
     }
 
@@ -124,5 +127,11 @@ class UserRepository
     public function findByEmail(string $email): ?User
     {
         return User::where('email', $email)->first();
+    }
+
+    public function findAll(): Collection
+    {
+        return User::where('is_active', 1)
+            ->get();
     }
 }

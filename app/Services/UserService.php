@@ -22,6 +22,48 @@ class UserService
         $this->userRepository = $userRepository;
     }
 
+    public function findAll()
+    {
+        $authUser = Authentication::user();
+
+        if ($authUser->type === UserTypeEnum::VETERINARIAN->value) {
+            throw new BaseException('ER002');
+        }
+
+        return $this->userRepository->findAll();
+    }
+
+    public function find(array $parameters)
+    {
+        $validator = Validator::make($parameters, $this->getValidations('find'));
+
+        if ($validator->fails()) {
+            throw ValidationException::validator($validator, $this->getErrorCodes('find'));
+        }
+
+        $authUser = Authentication::user();
+
+        if ($authUser->type === UserTypeEnum::VETERINARIAN->value && $authUser->id_user != $parameters['idUser']) {
+            throw new BaseException('ER002');
+        }
+
+        $user = $this->userRepository->find($parameters['idUser']);
+
+        if (!$user) {
+            throw new ResourceNotFoundException('user', new ExceptionMessage([
+                'server' => 'User not found.',
+                'client' => 'Usuário não encontrado.',
+            ]));
+        }
+
+        return $user;
+    }
+
+    public function findMe()
+    {
+        return Authentication::user();
+    }
+
     public function create(array $parameters)
     {
         $validator = Validator::make($parameters, $this->getValidations('create'));
@@ -145,10 +187,14 @@ class UserService
             ]));
         }
 
-        return $this->userRepository->delete([
+        $this->userRepository->delete([
             'id_user' => $parameters['idUser'],
             'updated_by' => $authUser->id_user,
         ]);
+        
+        $user->tokens()->delete();
+
+        return true;
     }
 
     public function restore(array $parameters)
@@ -240,8 +286,8 @@ class UserService
             ]));
         }
 
-        if ($parameters['newPassword'] !== $parameters['confirmPassword']) {
-            throw new ValidationException('confirmPassword', 'ER001', new ExceptionMessage([
+        if ($parameters['newPassword'] !== $parameters['confirmNewPassword']) {
+            throw new ValidationException('confirmNewPassword', 'ER001', new ExceptionMessage([
                 'server' => 'The password confirmation does not match.',
                 'client' => 'A confirmação da senha não coincide.',
             ]));
@@ -296,6 +342,12 @@ class UserService
     private function getValidations(string $method)
     {
         return match ($method) {
+            'find' => [
+                'idUser' => [
+                    'required',
+                    'integer',
+                ],
+            ],
             'create' => [
                 'type' => [
                     'required',
@@ -375,7 +427,7 @@ class UserService
                 'newPassword' => [
                     'required',
                 ],
-                'confirmPassword' => [
+                'confirmNewPassword' => [
                     'required',
                 ],
             ],
@@ -427,7 +479,7 @@ class UserService
                 'idUser.integer' => 'ER001',
                 'currentPassword.required' => 'ER001',
                 'newPassword.required' => 'ER001',
-                'confirmPassword.required' => 'ER001',
+                'confirmNewPassword.required' => 'ER001',
             ],
             'resetPassword' => [
                 'idUser.required' => 'ER001',

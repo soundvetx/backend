@@ -16,6 +16,53 @@ class UserController extends Controller
         $this->userService = $userService;
     }
 
+    public function findAll()
+    {
+        $users = $this->userService->findAll();
+
+        return response()->json([
+            'message' => [
+                'serverMessage' => 'Users retrieved successfully.',
+                'clientMessage' => 'Usuários recuperados com sucesso.',
+            ],
+            'data' => [
+                'users' => UserResource::collection($users),
+            ],
+        ]);
+    }
+
+    public function find($idUser)
+    {
+        $user = $this->userService->find([
+            'idUser' => $idUser,
+        ]);
+
+        return response()->json([
+            'message' => [
+                'serverMessage' => 'User retrieved successfully.',
+                'clientMessage' => 'Usuário recuperado com sucesso.',
+            ],
+            'data' => [
+                'user' => new UserResource($user),
+            ],
+        ]);
+    }
+
+    public function findMe()
+    {
+        $user = $this->userService->findMe();
+
+        return response()->json([
+            'message' => [
+                'serverMessage' => 'User retrieved successfully.',
+                'clientMessage' => 'Usuário recuperado com sucesso.',
+            ],
+            'data' => [
+                'user' => new UserResource($user),
+            ],
+        ]);
+    }
+
     public function create(Request $request)
     {
         $user = $this->userService->create($request->all());
@@ -25,7 +72,9 @@ class UserController extends Controller
                 'serverMessage' => 'User created successfully.',
                 'clientMessage' => 'Usuário criado com sucesso.',
             ],
-            'user' => new UserResource($user),
+            'data' => [
+                'user' => new UserResource($user),
+            ],
         ]);
     }
 
@@ -39,7 +88,9 @@ class UserController extends Controller
                 'serverMessage' => 'User updated successfully.',
                 'clientMessage' => 'Usuário atualizado com sucesso.',
             ],
-            'user' => new UserResource($user),
+            'data' => [
+                'user' => new UserResource($user),
+            ],
         ]);
     }
 
@@ -100,7 +151,7 @@ class UserController extends Controller
 
     public function resetPassword($idUser)
     {
-        [$user, $newPassword] = $this->userService->resetPassword([
+        [, $newPassword] = $this->userService->resetPassword([
             'idUser' => $idUser,
         ]);
 
@@ -109,7 +160,9 @@ class UserController extends Controller
                 'serverMessage' => 'Password reset successfully.',
                 'clientMessage' => 'Senha resetada com sucesso.',
             ],
-            'newPassword' => $newPassword,
+            'data' => [
+                'newPassword' => $newPassword,
+            ],
         ]);
     }
 }

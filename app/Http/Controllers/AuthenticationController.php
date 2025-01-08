@@ -24,7 +24,9 @@ class AuthenticationController extends Controller
                 'serverMessage' => 'User created successfully.',
                 'clientMessage' => 'Usuário criado com sucesso.',
             ],
-            'user' => new UserResource($user),
+            'data' => [
+                'user' => new UserResource($user),
+            ],
         ]);
     }
 
@@ -37,8 +39,10 @@ class AuthenticationController extends Controller
                 'serverMessage' => 'User authenticated successfully.',
                 'clientMessage' => 'Usuário autenticado com sucesso.',
             ],
-            'user' => new UserResource($user),
-            'token' => $token,
+            'data' => [
+                'user' => new UserResource($user),
+                'token' => $token,
+            ],
         ]);
     }
 
