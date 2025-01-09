@@ -37,4 +37,13 @@ return [
         ],
         'http_status_code' => 404
     ],
+    'ER004' => [
+        'error_code' => 'ER004',
+        'title' => 'Route not found',
+        'message' => [
+            'server' => 'The requested route was not found.',
+            'client' => 'A rota solicitada não foi encontrada.',
+        ],
+        'http_status_code' => 404
+    ],
 ];
