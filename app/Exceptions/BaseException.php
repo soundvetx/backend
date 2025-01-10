@@ -12,12 +12,12 @@ class BaseException extends Exception
     protected $exceptionMessage;
     protected $httpStatusCode;
 
-    public function __construct(string $errorCode = 'ER0000', ExceptionMessage $exceptionMessage = null)
+    public function __construct(string $errorCode = 'ER000', ExceptionMessage $exceptionMessage = null)
     {
         $error = config('errors.' . $errorCode);
 
         if (empty($error)) {
-            $error = config('errors.ER0000');
+            $error = config('errors.ER000');
         }
 
         $this->errorCode = $error['error_code'];

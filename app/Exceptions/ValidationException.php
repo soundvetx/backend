@@ -11,7 +11,7 @@ class ValidationException extends BaseException
 {
     protected $field;
 
-    public function __construct(string $field, string $errorCode = 'ER0000', ExceptionMessage $exceptionMessage = null)
+    public function __construct(string $field, string $errorCode = 'ER000', ExceptionMessage $exceptionMessage = null)
     {
         $this->field = $field;
         parent::__construct($errorCode, $exceptionMessage);

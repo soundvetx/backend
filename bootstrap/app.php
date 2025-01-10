@@ -28,7 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             if (request()->is('api/*')) {
-                throw new BaseException('ER0000', new ExceptionMessage([
+                throw new BaseException('ER000', new ExceptionMessage([
                     'server' => $exception->getMessage(),
                     'client' => 'Ocorreu um erro interno no servidor.',
                 ]));
