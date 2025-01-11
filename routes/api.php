@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\ExamRequestController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\EnsureParametersCase;
@@ -28,6 +29,10 @@ Route::middleware(EnsureParametersCase::class)->group(function () {
             Route::patch('/{idUser}/can-send-whatsapp', [UserController::class, 'canSendWhatsapp']);
             Route::patch('/{idUser}/change-password', [UserController::class, 'changePassword']);
             Route::patch('/{idUser}/reset-password', [UserController::class, 'resetPassword']);
+        });
+
+        Route::prefix('exam-requests')->group(function () {
+            Route::post('/generate', [ExamRequestController::class, 'generate']);
         });
     });
 });
