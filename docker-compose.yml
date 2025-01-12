@@ -54,6 +54,15 @@ services:
     networks:
       - local
 
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    container_name: soundvetx_mailhog
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    networks:
+      - local
+
 volumes:
   db_data:
 

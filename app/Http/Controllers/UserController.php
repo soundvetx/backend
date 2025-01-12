@@ -127,9 +127,9 @@ class UserController extends Controller
         ]);
     }
 
-    public function canSendWhatsapp($idUser)
+    public function canSendMessage($idUser)
     {
-        $this->userService->canSendWhatsapp([
+        $this->userService->canSendMessage([
             'idUser' => $idUser,
         ]);
 

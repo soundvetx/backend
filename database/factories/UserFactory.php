@@ -28,7 +28,7 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
-            'can_send_whatsapp' => 0,
+            'can_send_message' => 0,
             'type' => UserTypeEnum::DEVELOPER->value,
         ];
     }

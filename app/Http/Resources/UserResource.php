@@ -20,7 +20,7 @@ class UserResource extends JsonResource
                 'id' => $this->id_user,
                 'name' => $this->name,
                 'email' => $this->email,
-                'canSendWhatsapp' => $this->can_send_whatsapp == 1,
+                'canSendMessage' => $this->can_send_message == 1,
                 'type' => $this->type,
                 'crmv' => $this->veterinarian->crmv,
                 'uf' => $this->veterinarian->uf,
@@ -32,7 +32,7 @@ class UserResource extends JsonResource
             'id' => $this->id_user,
             'name' => $this->name,
             'email' => $this->email,
-            'canSendWhatsapp' => $this->can_send_whatsapp == 1,
+            'canSendMessage' => $this->can_send_message == 1,
             'type' => $this->type,
             'isActive' => $this->is_active == 1,
         ];

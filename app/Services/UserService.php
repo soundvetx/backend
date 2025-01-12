@@ -238,12 +238,12 @@ class UserService
         ]);
     }
 
-    public function canSendWhatsapp(array $parameters)
+    public function canSendMessage(array $parameters)
     {
-        $validator = Validator::make($parameters, $this->getValidations('canSendWhatsapp'));
+        $validator = Validator::make($parameters, $this->getValidations('canSendMessage'));
 
         if ($validator->fails()) {
-            throw ValidationException::validator($validator, $this->getErrorCodes('canSendWhatsapp'));
+            throw ValidationException::validator($validator, $this->getErrorCodes('canSendMessage'));
         }
 
         $authUser = Authentication::user();
@@ -263,7 +263,7 @@ class UserService
 
         return $this->userRepository->update([
             'id_user' => $parameters['idUser'],
-            'can_send_whatsapp' => !$user->can_send_whatsapp,
+            'can_send_message' => !$user->can_send_message,
             'updated_by' => $authUser->id_user,
         ]);
     }
@@ -436,7 +436,7 @@ class UserService
                     'integer',
                 ],
             ],
-            'canSendWhatsapp' => [
+            'canSendMessage' => [
                 'idUser' => [
                     'required',
                     'integer',
@@ -508,7 +508,7 @@ class UserService
                 'idUser.required' => 'ER001',
                 'idUser.integer' => 'ER001',
             ],
-            'canSendWhatsapp' => [
+            'canSendMessage' => [
                 'idUser.required' => 'ER001',
                 'idUser.integer' => 'ER001',
             ],

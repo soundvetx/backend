@@ -19,7 +19,7 @@ class ExamRequestService
             throw ValidationException::validator($validator, $this->getErrorCodes('generate'));
         }
 
-        $template = File::get(resource_path('templates/report.html'));
+        $template = File::get(resource_path('templates/ExamRequest.html'));
 
         $examItems = array_merge(
             $parameters['softTissues'] ?? [],
