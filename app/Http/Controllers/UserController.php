@@ -21,6 +21,7 @@ class UserController extends Controller
         $users = $this->userService->findAll([
             'page' => $request->query('page'),
             'limit' => $request->query('limit'),
+            'sortOrder' => $request->query('sortOrder'),
             'name' => $request->query('name')
         ]);
 

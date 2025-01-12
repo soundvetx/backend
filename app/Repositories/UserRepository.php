@@ -129,7 +129,7 @@ class UserRepository
         return User::where('email', $email)->first();
     }
 
-    public function findAll($page, $limit, array $filters): Collection
+    public function findAll($page, $limit, $sortOrder, array $filters): Collection
     {
         $query = User::where('is_active', 1);
 
@@ -139,9 +139,9 @@ class UserRepository
         }
 
         $query = $query
-            ->orderBy('name')
-            ->offset($limit * $page)
-            ->limit($limit);
+            ->orderBy('name', $sortOrder)
+            ->offset(($limit * $page ) + ($page > 0 ? 1 : 0))
+            ->limit($limit + 1);
 
         return $query->get();
     }

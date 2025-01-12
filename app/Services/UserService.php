@@ -42,7 +42,7 @@ class UserService
             $filters['name'] = $parameters['name'];
         }
 
-        return $this->userRepository->findAll($parameters['page'], $parameters['limit'], $filters);
+        return $this->userRepository->findAll($parameters['page'], $parameters['limit'], $parameters['sortOrder'], $filters);
     }
 
     public function find(array $parameters)
@@ -363,6 +363,10 @@ class UserService
                     'required',
                     'integer',
                 ],
+                'sortOrder' => [
+                    'required',
+                    'in:asc,desc'
+                ],
             ],
             'find' => [
                 'idUser' => [
@@ -471,6 +475,8 @@ class UserService
                 'page.integer' => 'ER001',
                 'limit.required' => 'ER001',
                 'limit.integer' => 'ER001',
+                'sortOrder.required' => 'ER001',
+                'sortOrder.in' => 'ER001',
             ],
             'find' => [
                 'idUser.required' => 'ER001',
