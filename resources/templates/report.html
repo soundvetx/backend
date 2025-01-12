@@ -1,229 +1,217 @@
 <!doctype html>
 <html lang="pt-BR">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Solicitação de Exame - {{ patientName }}</title>
 
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
-			rel="stylesheet"
-		/>
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/icon" href="https://soundvetx.soundvet.vet.br/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solicitação de Exame - {{ patientName }}</title>
 
-		<style>
-			:root {
-				--primary-color: #157e35;
-				--secondary-color: #9e9e9e;
-				--dark-color: #131313;
-			}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        rel="stylesheet" />
 
-			* {
-				margin: 0;
-				padding: 0;
-			}
+    <style>
+        :root {
+            --primary-color: #157e35;
+            --secondary-color: #9e9e9e;
+            --dark-color: #131313;
+        }
 
-			body {
-				font-family: Roboto, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-				font-size: 12pt;
-				margin: 20mm 20mm 20mm 20mm;
-				padding: 0;
-				color: var(--dark-color);
-			}
+        * {
+            margin: 0;
+            padding: 0;
+        }
 
-			small {
-				display: block;
-				font-size: 10pt;
-			}
+        body {
+            font-family: Inter, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 12pt;
+            margin: 20mm 20mm 20mm 20mm;
+            padding: 0;
+            color: var(--dark-color);
+        }
 
-			header {
-				padding-bottom: 5mm;
-				border-bottom: 0.7mm solid var(--primary-color);
+        small {
+            display: block;
+            font-size: 10pt;
+        }
 
-				display: flex;
-				align-items: flex-start;
-				justify-content: space-between;
-			}
+        header {
+            display: table;
+            padding-bottom: 5mm;
+            table-layout: fixed;
+            border-bottom: 0.5mm solid var(--primary-color);
+            width: 100%;
+        }
 
-			header div {
-				display: flex;
-				flex-direction: column;
-				gap: 1mm;
-				text-align: left;
-			}
+        header .left,
+        header .right {
+            display: table-cell;
+            vertical-align: top;
+        }
 
-			header div h1 {
-				font-size: 20pt;
-				color: var(--primary-color);
-			}
+        header .left {
+            text-align: left;
+        }
 
-			header div small {
-				font-size: 10pt;
-				color: var(--primary-color);
-			}
+        header .right {
+            text-align: right;
+            max-width: 60%;
+        }
 
-			header address {
-				display: flex;
-				flex-direction: column;
-				gap: 0.5mm;
-				text-align: right;
-				font-style: normal;
-				max-width: 60%;
-			}
+        header h1 {
+            font-size: 20pt;
+            color: var(--primary-color);
+            margin: 0;
+        }
 
-			header address a {
-				text-decoration: none;
-				color: var(--dark-color);
-			}
+        header small {
+            font-size: 10pt;
+            color: var(--primary-color);
+            display: block;
+        }
 
-			main {
-				padding: 8mm 0mm;
+        header address {
+            font-style: normal;
+        }
 
-				display: flex;
-				flex-direction: column;
-				gap: 8mm;
-			}
+        header address small {
+            color: var(--dark-color);
+        }
 
-			section h2 {
-				margin-bottom: 4mm;
-				font-size: 14pt;
-				font-weight: 500;
-			}
+        header address a {
+            text-decoration: none;
+            color: var(--dark-color);
+        }
 
-			section strong {
-				font-weight: 500;
-				line-height: 1.5;
-			}
+        main {
+            padding: 5mm 0mm;
 
-			section p {
-				display: block;
-				line-height: 1.25;
-			}
+            display: flex;
+            flex-direction: column;
+            gap: 8mm;
+        }
 
-			.wrapper {
-				display: grid;
-				grid-template-columns: 1fr 1fr;
-				gap: 5mm;
-			}
+        section h2 {
+            font-size: 14pt;
+            font-weight: 500;
+        }
 
-			.wrapper .container {
-				padding: 5mm;
-				border: 0.7mm solid var(--secondary-color);
-				border-radius: 4mm;
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				justify-content: center;
-			}
+        section strong {
+            font-weight: 500;
+            line-height: 1.5;
+        }
 
-			section .container {
-				display: flex;
-				flex-direction: column;
-			}
+        section p {
+            display: block;
+            line-height: 1;
+        }
 
-			section .container .items {
-				margin: 5mm 0mm;
-				display: flex;
-				flex-direction: column;
-				color: var(--secondary-color);
-			}
+        .wrapper {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+            border-spacing: 5mm;
+            margin: 0mm -5mm;
+            width: calc(100% + 10mm);
+        }
 
-			footer {
-				position: fixed;
-				bottom: 20mm;
+        .wrapper .container {
+            display: table-cell;
+            padding: 2mm;
+            border: 0.5mm solid var(--secondary-color);
+            border-radius: 4mm;
+            vertical-align: middle;
+            text-align: center;
+        }
 
-				display: flex;
-				flex-direction: column;
-				gap: 0.5mm;
-				padding-top: 5mm;
-				text-align: left;
-			}
+        .wrapper .container p {
+            font-size: 11pt;
+        }
 
-			footer .date {
-				color: var(--primary-color);
-				text-transform: uppercase;
-				font-weight: 500;
-			}
+        section .container {
+            display: flex;
+            flex-direction: column;
+        }
 
-			footer .signature {
-				color: var(--secondary-color);
-				font-size: 8pt;
-			}
-		</style>
-	</head>
-	<body>
-		<header>
-			<div>
-				<h1>{{ veterinarianName }}</h1>
-				<small>CRMV {{ veterinarianCrmv }}/{{ veterinarianUf }}</small>
-			</div>
+        section .container .items {
+            margin: 2mm 0mm;
+            display: flex;
+            flex-direction: column;
+            color: var(--secondary-color);
+        }
 
-			<address>
-				<small>
-					Rua Madre Bárbara Maix, 444 - Loja 5, Jardim Itu - Jardim Itu - CEP:
-					91225-200
-				</small>
-				<small>
-					Site:
-					<a href="www.vetplanalto.com.br" target="_blank">www.vetplanalto.com.br</a>
-				</small>
-				<small>Telefone: (51) 3221-4798</small>
-				<small>
-					E-mail: <a href="mailto:vetplanalto@gmail.com">vetplanalto@gmail.com</a>
-				</small>
-				<small>CNPJ: 36.966.152/0001-90</small>
-			</address>
-		</header>
+        footer {
+            position: fixed;
+            bottom: 20mm;
+            text-align: left;
+        }
 
-		<main>
-			<section>
-				<h2>Solicitação de Exame</h2>
+        footer .date {
+            color: var(--primary-color);
+            text-transform: uppercase;
+            font-weight: 500;
+        }
 
-				<div class="wrapper">
-					<div class="container">
-						<strong>Animal</strong>
-						<p><strong>Nome:</strong> {{ patientName }}</p>
-						<p><strong>Espécie:</strong> {{ patientSpecies }}</p>
-						<p><strong>Raça:</strong> {{ patientBreed }}</p>
-						<p><strong>Sexo:</strong> {{ patientSex }}</p>
-					</div>
+        footer .signature {
+            color: var(--secondary-color);
+            font-size: 8pt;
+        }
+    </style>
+</head>
 
-					<div class="container">
-						<strong>Tutor</strong>
-						<p><strong>Nome:</strong> {{ patientTutor }}</p>
-					</div>
-				</div>
-			</section>
+<body>
+    <header>
+        <div class="left">
+            <h1>{{ veterinarianName }}</h1>
+            <small>CRMV {{ veterinarianCrmv }}/{{ veterinarianUf }}</small>
+        </div>
+    </header>
 
-			<section>
-				<h2>Solicito o seguinte exame para o animal acima descrito:</h2>
+    <main>
+        <section>
+            <h2>Solicitação de Exame</h2>
 
-				<div class="container">
-					<strong>Imagem - Raio X - Sem contraste</strong>
+            <div class="wrapper">
+                <div class="container">
+                    <strong>Animal</strong>
+                    <p><strong>Nome:</strong> {{ patientName }}</p>
+                    <p><strong>Espécie:</strong> {{ patientSpecies }}</p>
+                    <p><strong>Raça:</strong> {{ patientBreed }}</p>
+                    <p><strong>Sexo:</strong> {{ patientSex }}</p>
+                </div>
 
-					<div class="items">{{ examItems }}</div>
-				</div>
-			</section>
+                <div class="container">
+                    <strong>Tutor</strong>
+                    <p><strong>Nome:</strong> {{ patientTutor }}</p>
+                </div>
+            </div>
+        </section>
 
-			<section>
-				<h2>Suspeitas/Motivo</h2>
+        <section>
+            <h2>Solicito o seguinte exame para o animal acima descrito:</h2>
 
-				<p>{{ examSuspicion }}</p>
-			</section>
+            <div class="container">
+                <strong>Imagem - Raio X - Sem contraste</strong>
 
-			{{ observations }}
-		</main>
+                <div class="items">{{ examItems }}</div>
+            </div>
+        </section>
 
-		<footer>
-			<small class="date">{{ currentFullDate }}</small>
-			<small class="signature">Assinado eletronicamente por</small>
+        {{ observations }}
+    </main>
 
-			<div class="info">
-				<small><strong>{{ veterinarianName }}</strong></small>
-				<small>CRMV {{ veterinarianCrmv }}/{{ veterinarianUf }}</small>
-				<small>Registro no MAPA 00079821/2019</small>
-			</div>
-		</footer>
-	</body>
+    <footer>
+        <small class="date">{{ currentFullDate }}</small>
+        <small class="signature">Assinado eletronicamente por</small>
+
+        <div class="info">
+            <small><strong>{{ veterinarianName }}</strong></small>
+            <small>CRMV {{ veterinarianCrmv }}/{{ veterinarianUf }}</small>
+        </div>
+    </footer>
+</body>
+
 </html>

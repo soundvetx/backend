@@ -39,12 +39,12 @@ class ExamRequestService
             $observationsContent = '
                 <section>
                     <h2>Observação</h2>
-                    <p>${formData.observations}</p>
+                    <p>' . $parameters['observations'] . '</p>
                 </section>
             ';
         }
 
-        $currentFullDate = now()->format('d/m/Y');
+        $currentFullDate = now()->translatedFormat('d \d\e F \d\e Y');
 
         $template = str_replace('{{ veterinarianName }}', $parameters['veterinarianName'], $template);
         $template = str_replace('{{ veterinarianCrmv }}', $parameters['veterinarianCrmv'], $template);
