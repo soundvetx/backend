@@ -22,12 +22,16 @@ class UserService
         $this->userRepository = $userRepository;
     }
 
-    public function findAll()
+    public function findAll(array $parameters)
     {
         $authUser = Authentication::user();
 
         if ($authUser->type === UserTypeEnum::VETERINARIAN->value) {
             throw new BaseException('ER002');
+        }
+
+        if (!empty($parameters['name'])) {
+            return $this->userRepository->findAllByName($parameters['name']);
         }
 
         return $this->userRepository->findAll();
@@ -191,7 +195,7 @@ class UserService
             'id_user' => $parameters['idUser'],
             'updated_by' => $authUser->id_user,
         ]);
-        
+
         $user->tokens()->delete();
 
         return true;

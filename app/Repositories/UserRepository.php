@@ -134,4 +134,11 @@ class UserRepository
         return User::where('is_active', 1)
             ->get();
     }
+
+    public function findAllByName(string $name): Collection
+    {
+        return User::where('is_active', 1)
+            ->whereRaw("LOWER(`name`) COLLATE utf8mb4_general_ci LIKE ?", ['%' . strtolower($name) . '%'])
+            ->get();
+    }
 }

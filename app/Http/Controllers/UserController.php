@@ -16,9 +16,11 @@ class UserController extends Controller
         $this->userService = $userService;
     }
 
-    public function findAll()
+    public function findAll(Request $request)
     {
-        $users = $this->userService->findAll();
+        $users = $this->userService->findAll([
+            'name' => $request->query('name')
+        ]);
 
         return response()->json([
             'message' => [
