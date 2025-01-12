@@ -24,17 +24,25 @@ class UserService
 
     public function findAll(array $parameters)
     {
+        $validator = Validator::make($parameters, $this->getValidations('findAll'));
+
+        if ($validator->fails()) {
+            throw ValidationException::validator($validator, $this->getErrorCodes('findAll'));
+        }
+
         $authUser = Authentication::user();
 
         if ($authUser->type === UserTypeEnum::VETERINARIAN->value) {
             throw new BaseException('ER002');
         }
 
+        $filters = [];
+
         if (!empty($parameters['name'])) {
-            return $this->userRepository->findAllByName($parameters['name']);
+            $filters['name'] = $parameters['name'];
         }
 
-        return $this->userRepository->findAll();
+        return $this->userRepository->findAll($parameters['page'], $parameters['limit'], $filters);
     }
 
     public function find(array $parameters)
@@ -346,6 +354,16 @@ class UserService
     private function getValidations(string $method)
     {
         return match ($method) {
+            'findAll' => [
+                'page' => [
+                    'required',
+                    'integer',
+                ],
+                'limit' => [
+                    'required',
+                    'integer',
+                ],
+            ],
             'find' => [
                 'idUser' => [
                     'required',
@@ -448,6 +466,16 @@ class UserService
     private function getErrorCodes(string $method)
     {
         return match ($method) {
+            'findAll' => [
+                'page.required' => 'ER001',
+                'page.integer' => 'ER001',
+                'limit.required' => 'ER001',
+                'limit.integer' => 'ER001',
+            ],
+            'find' => [
+                'idUser.required' => 'ER001',
+                'idUser.integer' => 'ER001',
+            ],
             'create' => [
                 'type.required' => 'ER001',
                 'type.in' => 'ER001',

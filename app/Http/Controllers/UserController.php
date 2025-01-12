@@ -19,6 +19,8 @@ class UserController extends Controller
     public function findAll(Request $request)
     {
         $users = $this->userService->findAll([
+            'page' => $request->query('page'),
+            'limit' => $request->query('limit'),
             'name' => $request->query('name')
         ]);
 

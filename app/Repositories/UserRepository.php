@@ -129,10 +129,21 @@ class UserRepository
         return User::where('email', $email)->first();
     }
 
-    public function findAll(): Collection
+    public function findAll($page, $limit, array $filters): Collection
     {
-        return User::where('is_active', 1)
-            ->get();
+        $query = User::where('is_active', 1);
+
+        if (array_key_exists('name', $filters)) {
+            $query = $query
+                ->whereRaw("LOWER(`name`) COLLATE utf8mb4_general_ci LIKE ?", ['%' . strtolower($filters['name']) . '%']);
+        }
+
+        $query = $query
+            ->orderBy('name')
+            ->offset($limit * $page)
+            ->limit($limit);
+
+        return $query->get();
     }
 
     public function findAllByName(string $name): Collection
