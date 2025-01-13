@@ -68,10 +68,10 @@ class ExamRequestService
         $dompdf->loadHtml($template);
         $dompdf->render();
 
-        $fileName = time() . '.pdf';
-        Storage::put($fileName, $dompdf->output());
+        $filePath = 'exam-requests/' . time() . '.pdf';
+        Storage::put($filePath, $dompdf->output());
 
-        return Storage::url($fileName);
+        return Storage::url($filePath);
     }
 
     public function send(array $parameters)
