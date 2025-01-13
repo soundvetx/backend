@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Exceptions\ValidationException;
+use App\Mail\ExamRequestMail;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -72,6 +74,24 @@ class ExamRequestService
         return Storage::url($fileName);
     }
 
+    public function send(array $parameters)
+    {
+        $validator = Validator::make($parameters, $this->getValidations('send'));
+
+        if ($validator->fails()) {
+            throw ValidationException::validator($validator, $this->getErrorCodes('send'));
+        }
+
+        Mail::to(env('MAIL_FROM_ADDRESS'))->send(new ExamRequestMail(
+            $parameters['veterinarianClinic'],
+            $parameters['veterinarianName'],
+            $parameters['patientName'],
+            $parameters['examRequestUrl'],
+        ));
+
+        return true;
+    }
+
     private function getValidations(string $method)
     {
         return match ($method) {
@@ -97,6 +117,12 @@ class ExamRequestService
                 'appendicularSkeletonPelvicLimbOptions' => ['nullable', 'array'],
                 'appendicularSkeletonPelvis' => ['nullable', 'array'],
                 'observations' => ['nullable', 'string'],
+            ],
+            'send' => [
+                'veterinarianClinic' => ['required', 'string', 'min:1'],
+                'veterinarianName' => ['required', 'string', 'min:1'],
+                'patientName' => ['required', 'string', 'min:1'],
+                'examRequestUrl' => ['required', 'string', 'min:1'],
             ],
             default => [],
         };
@@ -140,6 +166,20 @@ class ExamRequestService
                 'appendicularSkeletonPelvicLimbOptions.array' => 'ER001',
                 'appendicularSkeletonPelvis.array' => 'ER001',
                 'observations.string' => 'ER001',
+            ],
+            'send' => [
+                'veterinarianClinic.required' => 'ER001',
+                'veterinarianClinic.string' => 'ER001',
+                'veterinarianClinic.min' => 'ER001',
+                'veterinarianName.required' => 'ER001',
+                'veterinarianName.string' => 'ER001',
+                'veterinarianName.min' => 'ER001',
+                'patientName.required' => 'ER001',
+                'patientName.string' => 'ER001',
+                'patientName.min' => 'ER001',
+                'examRequestUrl.required' => 'ER001',
+                'examRequestUrl.string' => 'ER001',
+                'examRequestUrl.min' => 'ER001',
             ],
             default => [],
         };

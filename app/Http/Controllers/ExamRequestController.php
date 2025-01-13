@@ -19,11 +19,22 @@ class ExamRequestController extends Controller
 
         return response()->json([
             'message' => [
-                'serverMessage' => 'Report generated successfully',
+                'serverMessage' => 'Exam request file generated successfully',
                 'clientMessage' => 'Arquivo do exame gerado com sucesso.',
             ],
             'data' => [
                 'url' => $examRequestUrl,
+            ],
+        ]);
+    }
+
+    public function send(Request $request) {
+        $this->examRequestService->send($request->all());
+
+        return response()->json([
+            'message' => [
+                'serverMessage' => 'Exam request file sent successfully',
+                'clientMessage' => 'Requisição de exame enviada com sucesso.',
             ],
         ]);
     }

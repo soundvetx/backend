@@ -2,7 +2,6 @@
 
 namespace App\Mail;
 
-use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -11,22 +10,29 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
-class ResetPasswordMail extends Mailable
+class ExamRequestMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    private $user;
-    private $url;
+    private string $veterinarianClinic;
+    private string $veterinarianName;
+    private string $patientName;
+    private string $examRequestUrl;
+
 
     /**
      * Create a new message instance.
      */
     public function __construct(
-        User $user,
-        string $url
+        string $veterinarianClinic,
+        string $veterinarianName,
+        string $patientName,
+        string $examRequestUrl,
     ) {
-        $this->user = $user;
-        $this->url = $url;
+        $this->veterinarianClinic = $veterinarianClinic;
+        $this->veterinarianName = $veterinarianName;
+        $this->patientName = $patientName;
+        $this->examRequestUrl = $examRequestUrl;
     }
 
     /**
@@ -35,7 +41,7 @@ class ResetPasswordMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'SoundvetX - Redefinição de Senha',
+            subject: 'Requisição de Exame - Paciente ' . $this->veterinarianName,
         );
     }
 
@@ -44,11 +50,12 @@ class ResetPasswordMail extends Mailable
      */
     public function content(): Content
     {
-        $mail = File::get(resource_path('templates/ResetPasswordMail.html'));
+        $mail = File::get(resource_path('templates/ExamRequestMail.html'));
 
         $mail = str_replace('{{ logoUrl }}', Storage::url('logo/logo_full_primary.png'), $mail);
-        $mail = str_replace('{{ userName }}', $this->user->name, $mail);
-        $mail = str_replace('{{ resetPasswordUrl }}', $this->url, $mail);
+        $mail = str_replace('{{ veterinarianClinic }}', $this->veterinarianClinic, $mail);
+        $mail = str_replace('{{ veterinarianName }}', $this->veterinarianName, $mail);
+        $mail = str_replace('{{ patientName }}', $this->patientName, $mail);
 
         return new Content(
             view: null,

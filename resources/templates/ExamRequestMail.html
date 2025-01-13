@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang='pt-BR'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Requisição de Exame - Paciente {{ patientName }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        :root {
+            --bg-body: #f4f4f4;
+            --bg-header: #eeeeee;
+            --bg-content: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.2);
+            --text: #261a1a;
+            --text-smooth: #555555;
+            --primary: #347d9e;
+        }
+
+        body {
+            font-family: Poppins, sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            padding: 0;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 30px auto;
+            background-color: var(--bg-content);
+            border-radius: 8px;
+            box-shadow: 0 0px 6px var(--shadow);
+            overflow: hidden;
+        }
+
+        .header {
+            background: var(--bg-header);
+            color: var(--text);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .header img {
+            max-width: 30%;
+            height: auto;
+        }
+
+        .content {
+            padding: 20px;
+            text-align: center;
+            color: var(--text);
+        }
+
+        .content p {
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+
+        .reset-password {
+            display: inline-block;
+            background-color: var(--primary);
+            color: var(--bg-content);
+            border: 1px solid transparent;
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin: 15px 0;
+            transition: all 0.2s linear;
+        }
+
+        .reset-password:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background-color: var(--bg-content);
+        }
+
+        .footer {
+            background-color: var(--bg-header);
+            color: var(--text-smooth);
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class='email-container'>
+        <div class='header'>
+            <img src='{{ logoUrl }}' alt='SoundvetX'>
+        </div>
+        <div class='content'>
+            <p>A SoundvetX recebeu uma nova solicitação de exame!</p>
+            <p><strong>Nome da clínica:</strong> {{ veterinarianClinic }}</p>
+            <p><strong>Nome do(a) médico(a) veterinário(a):</strong> {{ veterinarianName }}</p>
+            <p><strong>Nome do paciente:</strong> {{ patientName }}</p>
+        </div>
+        <div class='footer'>
+            <p>&copy; 2025 SoundvetX. Todos os direitos reservados.</p>
+        </div>
+    </div>
+</body>
+
+</html>

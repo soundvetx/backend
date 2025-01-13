@@ -33,6 +33,7 @@ Route::middleware(EnsureParametersCase::class)->group(function () {
 
         Route::prefix('exam-requests')->group(function () {
             Route::post('/generate', [ExamRequestController::class, 'generate']);
+            Route::post('/send', [ExamRequestController::class, 'send']);
         });
     });
 });
