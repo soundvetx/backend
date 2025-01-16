@@ -23,6 +23,8 @@ class ExamRequestService
 
         $template = File::get(resource_path('templates/ExamRequest.html'));
 
+        $logoUrl = Storage::url('logos/logo_full_primary.png');
+
         $paymentMethodContent = $parameters['paymentMethod'];
 
         if ($parameters['paymentMethod'] === 'Pet Love') {
@@ -88,6 +90,7 @@ class ExamRequestService
         $observationsContent = '<p>' . $parameters['observations'] . '</p>';
         $currentFullDate = now()->translatedFormat('d \d\e F \d\e Y');
 
+        $template = str_replace('{{ logoUrl }}', $logoUrl, $template);
         $template = str_replace('{{ paymentMethod }}', $paymentMethodContent, $template);
         $template = str_replace('{{ veterinarianClinic }}', $parameters['veterinarianClinic'], $template);
         $template = str_replace('{{ veterinarianName }}', $parameters['veterinarianName'], $template);
