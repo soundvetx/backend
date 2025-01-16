@@ -23,40 +23,84 @@ class ExamRequestService
 
         $template = File::get(resource_path('templates/ExamRequest.html'));
 
-        $examItems = array_merge(
-            $parameters['softTissues'] ?? [],
-            $parameters['skullItems'] ?? [],
-            $parameters['axialSkeletonItems'] ?? [],
-        );
+        $paymentMethodContent = $parameters['paymentMethod'];
 
-        $examItemsContent = '';
-
-        if (count($examItems) > 0) {
-            $examItemsContent = '<p>' . join('</p><p>', $examItems) . '</p>';
+        if ($parameters['paymentMethod'] === 'Pet Love') {
+            $paymentMethodContent .= ' - CHIP: ' . $parameters['chip'];
         }
 
-        $observationsContent = '';
+        $examsWithoutContrast = [];
 
-        if (($parameters['observations'] ?? '') !== '') {
-            $observationsContent = '
-                <section>
-                    <h2>Observação</h2>
-                    <p>' . $parameters['observations'] . '</p>
-                </section>
+        if (!empty($parameters['softTissuesWithoutContrast'])) {
+            $examsWithoutContrast[] = "<p><strong class='text-color'>Tecidos Moles:</strong> " . join(', ', $parameters['softTissuesWithoutContrast']) . '</p>';
+        }
+
+        if (!empty($parameters['skullItems'])) {
+            $examsWithoutContrast[] = "<p><strong class='text-color'>Crânio:</strong> " . join(', ', $parameters['skullItems']) . '</p>';
+        }
+
+        if (!empty($parameters['axialSkeletonItems'])) {
+            $examsWithoutContrast[] = "<p><strong class='text-color'>Esqueleto Axial:</strong> " . join(', ', $parameters['axialSkeletonItems']) . '</p>';
+        }
+
+        if (!empty($parameters['appendicularSkeletonThoracicLimb'])) {
+            $examsWithoutContrast[] = "<p><strong class='text-color'>Membro Torácico " . $parameters['appendicularSkeletonThoracicLimb'] . ':</strong> ' . join(', ', $parameters['appendicularSkeletonThoracicLimbOptions']) . '</p>';
+        }
+
+        if (!empty($parameters['appendicularSkeletonPelvicLimb'])) {
+            $examsWithoutContrast[] = "<p><strong class='text-color'>Membro Pélvico " . $parameters['appendicularSkeletonPelvicLimb'] . ':</strong> ' . join(', ', $parameters['appendicularSkeletonPelvicLimbOptions']) . '</p>';
+        }
+
+        if (!empty($parameters['appendicularSkeletonPelvis'])) {
+            $examsWithoutContrast[] = "<p><strong class='text-color'>Pelve:</strong> " . join(', ', $parameters['appendicularSkeletonPelvis']) . '</p>';
+        }
+
+        $examsWithoutContrastContent = '';
+
+        if (!empty($examsWithoutContrast)) {
+            $examsWithoutContrastContent = '
+                <div class="container">
+                    <h4 class="title">Imagem - Raio X - Sem contraste</h4>
+
+                    <div class="list primary-color">' . join('', $examsWithoutContrast) . '</div>
+                </div>
             ';
         }
 
+        $examsWithContrast = [];
+
+        if (!empty($parameters['softTissuesWithContrast'])) {
+            $examsWithContrast[] = '<p><strong>Tecidos Moles:</strong> ' . join(', ', $parameters['softTissuesWithContrast']) . '</p>';
+        }
+
+        $examsWithContrastContent = '';
+
+        if (!empty($examsWithContrast)) {
+            $examsWithContrastContent = '
+                <div class="container">
+                    <h4 class="title">Imagem - Raio X - Com contraste</h4>
+
+                    <div class="list primary-color">' . join('', $examsWithContrast) . '</div>
+                </div>
+            ';
+        }
+
+        $observationsContent = '<p>' . $parameters['observations'] . '</p>';
         $currentFullDate = now()->translatedFormat('d \d\e F \d\e Y');
 
+        $template = str_replace('{{ paymentMethod }}', $paymentMethodContent, $template);
+        $template = str_replace('{{ veterinarianClinic }}', $parameters['veterinarianClinic'], $template);
         $template = str_replace('{{ veterinarianName }}', $parameters['veterinarianName'], $template);
         $template = str_replace('{{ veterinarianCrmv }}', $parameters['veterinarianCrmv'], $template);
         $template = str_replace('{{ veterinarianUf }}', $parameters['veterinarianUf'], $template);
         $template = str_replace('{{ patientName }}', $parameters['patientName'], $template);
+        $template = str_replace('{{ patientAge }}', $parameters['patientAge'], $template);
         $template = str_replace('{{ patientSpecies }}', $parameters['patientSpecies'], $template);
         $template = str_replace('{{ patientBreed }}', $parameters['patientBreed'], $template);
         $template = str_replace('{{ patientSex }}', $parameters['patientSex'], $template);
         $template = str_replace('{{ patientTutor }}', $parameters['patientTutor'], $template);
-        $template = str_replace('{{ examItems }}', $examItemsContent, $template);
+        $template = str_replace('{{ examsWithoutContrast }}', $examsWithoutContrastContent, $template);
+        $template = str_replace('{{ examsWithContrast }}', $examsWithContrastContent, $template);
         $template = str_replace('{{ observations }}', $observationsContent, $template);
         $template = str_replace('{{ currentFullDate }}', $currentFullDate, $template);
 
@@ -106,9 +150,10 @@ class ExamRequestService
                 'patientAge' => ['required', 'integer', 'min:0'],
                 'patientBreed' => ['required', 'string', 'min:1'],
                 'patientTutor' => ['required', 'string', 'min:1'],
-                'chip' => ['required', 'string', 'min:1'],
+                'chip' => ['required_if:paymentMethod,Pet Love', 'string', 'min:1'],
                 'paymentMethod' => ['required', 'string', 'min:1'],
-                'softTissues' => ['nullable', 'array'],
+                'softTissuesWithContrast' => ['nullable', 'array'],
+                'softTissuesWithoutContrast' => ['nullable', 'array'],
                 'skullItems' => ['nullable', 'array'],
                 'axialSkeletonItems' => ['nullable', 'array'],
                 'appendicularSkeletonThoracicLimb' => ['nullable', 'string'],
@@ -116,7 +161,7 @@ class ExamRequestService
                 'appendicularSkeletonPelvicLimb' => ['nullable', 'string'],
                 'appendicularSkeletonPelvicLimbOptions' => ['nullable', 'array'],
                 'appendicularSkeletonPelvis' => ['nullable', 'array'],
-                'observations' => ['nullable', 'string'],
+                'observations' => ['required', 'string', 'min:1'],
             ],
             'send' => [
                 'veterinarianClinic' => ['required', 'string', 'min:1'],
@@ -134,30 +179,42 @@ class ExamRequestService
             'generate' => [
                 'veterinarianClinic.required' => 'ER001',
                 'veterinarianClinic.string' => 'ER001',
+                'veterinarianClinic.min' => 'ER001',
                 'veterinarianName.required' => 'ER001',
                 'veterinarianName.string' => 'ER001',
+                'veterinarianName.min' => 'ER001',
                 'veterinarianCrmv.required' => 'ER001',
                 'veterinarianCrmv.string' => 'ER001',
+                'veterinarianCrmv.min' => 'ER001',
                 'veterinarianUf.required' => 'ER001',
                 'veterinarianUf.string' => 'ER001',
+                'veterinarianUf.min' => 'ER001',
                 'patientName.required' => 'ER001',
                 'patientName.string' => 'ER001',
+                'patientName.min' => 'ER001',
                 'patientSpecies.required' => 'ER001',
                 'patientSpecies.string' => 'ER001',
+                'patientSpecies.min' => 'ER001',
                 'patientSex.required' => 'ER001',
                 'patientSex.string' => 'ER001',
+                'patientSex.min' => 'ER001',
                 'patientAge.required' => 'ER001',
                 'patientAge.integer' => 'ER001',
                 'patientAge.min' => 'ER001',
                 'patientBreed.required' => 'ER001',
                 'patientBreed.string' => 'ER001',
+                'patientBreed.min' => 'ER001',
                 'patientTutor.required' => 'ER001',
                 'patientTutor.string' => 'ER001',
-                'chip.required' => 'ER001',
+                'patientTutor.min' => 'ER001',
+                'chip.required_if' => 'ER001',
                 'chip.string' => 'ER001',
+                'chip.min' => 'ER001',
                 'paymentMethod.required' => 'ER001',
                 'paymentMethod.string' => 'ER001',
-                'softTissues.array' => 'ER001',
+                'paymentMethod.min' => 'ER001',
+                'softTissuesWithContrast.array' => 'ER001',
+                'softTissuesWithoutContrast.array' => 'ER001',
                 'skullItems.array' => 'ER001',
                 'axialSkeletonItems.array' => 'ER001',
                 'appendicularSkeletonThoracicLimb.string' => 'ER001',
@@ -165,7 +222,9 @@ class ExamRequestService
                 'appendicularSkeletonPelvicLimb.string' => 'ER001',
                 'appendicularSkeletonPelvicLimbOptions.array' => 'ER001',
                 'appendicularSkeletonPelvis.array' => 'ER001',
+                'observations.required' => 'ER001',
                 'observations.string' => 'ER001',
+                'observations.min' => 'ER001',
             ],
             'send' => [
                 'veterinarianClinic.required' => 'ER001',

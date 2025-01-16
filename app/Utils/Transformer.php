@@ -13,11 +13,6 @@ class Transformer
         $result = [];
 
         foreach ($data as $key => $value) {
-            if (is_numeric($key)) {
-                $result[$key] = self::camelToSnakeCase($value);
-                continue;
-            }
-
             if (is_array($value)) {
                 $value = self::camelToSnakeCase($value);
             }
@@ -38,11 +33,6 @@ class Transformer
         $result = [];
 
         foreach ($data as $key => $value) {
-            if (is_numeric($key)) {
-                $result[$key] = self::snakeToCamelCase($value);
-                continue;
-            }
-
             if (is_array($value)) {
                 $value = self::snakeToCamelCase($value);
             }
