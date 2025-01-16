@@ -46,7 +46,7 @@ class ResetPasswordMail extends Mailable
     {
         $mail = File::get(resource_path('templates/ResetPasswordMail.html'));
 
-        $mail = str_replace('{{ logoUrl }}', Storage::url('logo/logo_full_primary.png'), $mail);
+        $mail = str_replace('{{ logoUrl }}', Storage::url('logo/logo-full-primary.png'), $mail);
         $mail = str_replace('{{ userName }}', $this->user->name, $mail);
         $mail = str_replace('{{ resetPasswordUrl }}', $this->url, $mail);
 

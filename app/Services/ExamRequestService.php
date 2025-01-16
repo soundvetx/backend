@@ -23,7 +23,7 @@ class ExamRequestService
 
         $template = File::get(resource_path('templates/ExamRequest.html'));
 
-        $logoUrl = Storage::url('logos/logo_full_primary.png');
+        $logoUrl = Storage::url('logos/logo-full-primary.png');
 
         $paymentMethodContent = $parameters['paymentMethod'];
 
@@ -72,7 +72,7 @@ class ExamRequestService
         $examsWithContrast = [];
 
         if (!empty($parameters['softTissuesWithContrast'])) {
-            $examsWithContrast[] = '<p><strong>Tecidos Moles:</strong> ' . join(', ', $parameters['softTissuesWithContrast']) . '</p>';
+            $examsWithContrast[] = "<p><strong class='text-color'>Tecidos Moles:</strong> " . join(', ', $parameters['softTissuesWithContrast']) . '</p>';
         }
 
         $examsWithContrastContent = '';
@@ -153,7 +153,7 @@ class ExamRequestService
                 'patientAge' => ['required', 'integer', 'min:0'],
                 'patientBreed' => ['required', 'string', 'min:1'],
                 'patientTutor' => ['required', 'string', 'min:1'],
-                'chip' => ['required_if:paymentMethod,Pet Love', 'string', 'min:1'],
+                'chip' => ['required_if:paymentMethod,Pet Love'],
                 'paymentMethod' => ['required', 'string', 'min:1'],
                 'softTissuesWithContrast' => ['nullable', 'array'],
                 'softTissuesWithoutContrast' => ['nullable', 'array'],
@@ -211,8 +211,6 @@ class ExamRequestService
                 'patientTutor.string' => 'ER001',
                 'patientTutor.min' => 'ER001',
                 'chip.required_if' => 'ER001',
-                'chip.string' => 'ER001',
-                'chip.min' => 'ER001',
                 'paymentMethod.required' => 'ER001',
                 'paymentMethod.string' => 'ER001',
                 'paymentMethod.min' => 'ER001',
