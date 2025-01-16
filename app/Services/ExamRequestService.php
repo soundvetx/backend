@@ -31,6 +31,16 @@ class ExamRequestService
             $paymentMethodContent .= ' - CHIP: ' . $parameters['chip'];
         }
 
+        if ($parameters['patientAgePeriod'] === 'Anos' && $parameters['patientAge'] == 1) {
+            $parameters['patientAgePeriod'] = 'Ano';
+        }
+
+        if ($parameters['patientAgePeriod'] === 'Meses' && $parameters['patientAge'] == 1) {
+            $parameters['patientAgePeriod'] = 'Mês';
+        }
+
+        $patientAgeContent = $parameters['patientAge'] . ' ' .  strtolower($parameters['patientAgePeriod']);
+
         $examsWithoutContrast = [];
 
         if (!empty($parameters['softTissuesWithoutContrast'])) {
@@ -97,7 +107,7 @@ class ExamRequestService
         $template = str_replace('{{ veterinarianCrmv }}', $parameters['veterinarianCrmv'], $template);
         $template = str_replace('{{ veterinarianUf }}', $parameters['veterinarianUf'], $template);
         $template = str_replace('{{ patientName }}', $parameters['patientName'], $template);
-        $template = str_replace('{{ patientAge }}', $parameters['patientAge'], $template);
+        $template = str_replace('{{ patientAge }}', $patientAgeContent, $template);
         $template = str_replace('{{ patientSpecies }}', $parameters['patientSpecies'], $template);
         $template = str_replace('{{ patientBreed }}', $parameters['patientBreed'], $template);
         $template = str_replace('{{ patientSex }}', $parameters['patientSex'], $template);
@@ -150,7 +160,8 @@ class ExamRequestService
                 'patientName' => ['required', 'string', 'min:1'],
                 'patientSpecies' => ['required', 'string', 'min:1'],
                 'patientSex' => ['required', 'string', 'min:1'],
-                'patientAge' => ['required', 'integer', 'min:0'],
+                'patientAge' => ['required', 'integer', 'min:1'],
+                'patientAgePeriod' => ['required', 'string', 'min:1'],
                 'patientBreed' => ['required', 'string', 'min:1'],
                 'patientTutor' => ['required', 'string', 'min:1'],
                 'chip' => ['required_if:paymentMethod,Pet Love'],
@@ -204,6 +215,9 @@ class ExamRequestService
                 'patientAge.required' => 'ER001',
                 'patientAge.integer' => 'ER001',
                 'patientAge.min' => 'ER001',
+                'patientAgePeriod.required' => 'ER001',
+                'patientAgePeriod.string' => 'ER001',
+                'patientAgePeriod.min' => 'ER001',
                 'patientBreed.required' => 'ER001',
                 'patientBreed.string' => 'ER001',
                 'patientBreed.min' => 'ER001',
