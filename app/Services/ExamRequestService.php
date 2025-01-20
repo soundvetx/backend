@@ -56,11 +56,19 @@ class ExamRequestService
         }
 
         if (!empty($parameters['appendicularSkeletonThoracicLimb'])) {
-            $examsWithoutContrast[] = "<p><strong class='text-color'>Membro Torácico " . $parameters['appendicularSkeletonThoracicLimb'] . ':</strong> ' . join(', ', $parameters['appendicularSkeletonThoracicLimbOptions']) . '</p>';
+            if ($parameters['paymentMethod'] === 'Pet Love') {
+                $examsWithoutContrast[] = "<p><strong class='text-color'>Membro Torácico " . $parameters['appendicularSkeletonThoracicLimb'] . ':</strong> ' . join(', ', $parameters['appendicularSkeletonThoracicLimbOptions']) . '</p>';
+            } else {
+                $examsWithoutContrast[] = "<p><strong class='text-color'>Membro Torácico " . $parameters['appendicularSkeletonThoracicLimb'] . '</strong></p>';
+            }
         }
 
         if (!empty($parameters['appendicularSkeletonPelvicLimb'])) {
-            $examsWithoutContrast[] = "<p><strong class='text-color'>Membro Pélvico " . $parameters['appendicularSkeletonPelvicLimb'] . ':</strong> ' . join(', ', $parameters['appendicularSkeletonPelvicLimbOptions']) . '</p>';
+            if ($parameters['paymentMethod'] === 'Pet Love') {
+                $examsWithoutContrast[] = "<p><strong class='text-color'>Membro Pélvico " . $parameters['appendicularSkeletonPelvicLimb'] . ':</strong> ' . join(', ', $parameters['appendicularSkeletonPelvicLimbOptions']) . '</p>';
+            } else {
+                $examsWithoutContrast[] = "<p><strong class='text-color'>Membro Pélvico " . $parameters['appendicularSkeletonPelvicLimb'] . '</strong></p>';
+            }
         }
 
         if (!empty($parameters['appendicularSkeletonPelvis'])) {
