@@ -5,10 +5,6 @@ use App\Utils\ExceptionMessage;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
-Route::get('/', function () {
-    return response()->file(public_path('index.html'));
-});
-
 Route::get('/storage/{path}', function ($path) {
     $filePath = Storage::get($path);
 
@@ -25,3 +21,22 @@ Route::get('/storage/{path}', function ($path) {
         'client' => 'Arquivo não encontrado.'
     ]));
 });
+
+Route::get('/', function () {
+    return response()->file(public_path('index.html'));
+});
+
+Route::get('/{any}', function ($any) {
+    $filePath = public_path($any);
+
+    if (!file_exists($filePath)) {
+        return response()->file(public_path('index.html'));
+    }
+
+    $mimeType = mime_content_type($filePath);
+    if (pathinfo($filePath, PATHINFO_EXTENSION) === 'js') {
+        $mimeType = 'application/javascript';
+    }
+
+    return response()->file($filePath, ['Content-Type' => $mimeType]);
+})->where('any', '^(?!api).*$');
