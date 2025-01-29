@@ -16,17 +16,17 @@ class ResetPasswordMail extends Mailable
     use Queueable, SerializesModels;
 
     private $user;
-    private $url;
+    private $token;
 
     /**
      * Create a new message instance.
      */
     public function __construct(
         User $user,
-        string $url
+        string $token
     ) {
         $this->user = $user;
-        $this->url = $url;
+        $this->token = $token;
     }
 
     /**
@@ -46,9 +46,9 @@ class ResetPasswordMail extends Mailable
     {
         $mail = File::get(resource_path('templates/ResetPasswordMail.html'));
 
-        $mail = str_replace('{{ logoUrl }}', Storage::url('logo/logo-full-primary.png'), $mail);
+        $mail = str_replace('{{ logoUrl }}', Storage::url('logos/logo-full-primary.png'), $mail);
         $mail = str_replace('{{ userName }}', $this->user->name, $mail);
-        $mail = str_replace('{{ resetPasswordUrl }}', $this->url, $mail);
+        $mail = str_replace('{{ resetPasswordUrl }}', env('APP_URL') . "/forgot-password?token=$this->token", $mail);
 
         return new Content(
             view: null,

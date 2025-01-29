@@ -3,11 +3,13 @@
 namespace App\Services;
 
 use App\Exceptions\ValidationException;
+use App\Mail\ResetPasswordMail;
 use App\Models\User;
 use App\Utils\Authentication;
 use App\Utils\ExceptionMessage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class AuthenticationService
@@ -82,6 +84,40 @@ class AuthenticationService
             ->delete();
     }
 
+    public function forgotPassword(array $parameters)
+    {
+        $validator = Validator::make($parameters, $this->getValidations('forgotPassword'));
+
+        if ($validator->fails()) {
+            throw ValidationException::validator($validator, $this->getErrorCodes('forgotPassword'));
+        }
+
+        $user = $this->userService->findByEmail($parameters['email']);
+
+        if (!$user) {
+            throw new ValidationException('email', 'ER001', new ExceptionMessage([
+                'server' => 'The provided e-mail does not exist in our database.',
+                'client' => 'O e-mail informado não consta em nossa base de dados.',
+            ]));
+        }
+
+        $tokenDetails = [
+            'name' => 'password_reset',
+            'abilities' => ['*'],
+            'expires_at' => now()->addMinutes(10),
+        ];
+
+        $token = $user->createToken(
+            $tokenDetails['name'],
+            $tokenDetails['abilities'],
+            $tokenDetails['expires_at'],
+        )->plainTextToken;
+
+        Mail::to($user->email)->send(new ResetPasswordMail($user, $token));
+
+        return true;
+    }
+
     private function getValidations(string $method)
     {
         return match ($method) {
@@ -102,6 +138,12 @@ class AuthenticationService
                     'required',
                 ],
             ],
+            'forgotPassword' => [
+                'email' => [
+                    'required',
+                    'email',
+                ],
+            ],
             default => [],
         };
     }
@@ -117,6 +159,10 @@ class AuthenticationService
                 'email.required' => 'ER001',
                 'email.email' => 'ER001',
                 'password.required' => 'ER001',
+            ],
+            'forgotPassword' => [
+                'email.required' => 'ER001',
+                'email.email' => 'ER001',
             ],
             default => [],
         };

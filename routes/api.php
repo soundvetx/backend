@@ -11,6 +11,7 @@ Route::middleware(EnsureParametersCase::class)->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/sign-up', [AuthenticationController::class, 'signUp']);
         Route::post('/sign-in', [AuthenticationController::class, 'signIn']);
+        Route::post('/forgot-password', [AuthenticationController::class, 'forgotPassword']);
 
         Route::middleware(Authenticate::class)->group(function () {
             Route::post('/sign-out', [AuthenticationController::class, 'signOut']);

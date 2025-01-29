@@ -57,4 +57,16 @@ class AuthenticationController extends Controller
             ],
         ]);
     }
+
+    public function forgotPassword(Request $request)
+    {
+        $this->authenticationService->forgotPassword($request->all());
+
+        return response()->json([
+            'message' => [
+                'serverMessage' => 'Password reset email sent successfully.',
+                'clientMessage' => 'E-mail de redefinição de senha enviado com sucesso.',
+            ],
+        ]);
+    }
 }

@@ -52,7 +52,7 @@ class ExamRequestMail extends Mailable
     {
         $mail = File::get(resource_path('templates/ExamRequestMail.html'));
 
-        $mail = str_replace('{{ logoUrl }}', Storage::url('logo/logo-full-primary.png'), $mail);
+        $mail = str_replace('{{ logoUrl }}', Storage::url('logos/logo-full-primary.png'), $mail);
         $mail = str_replace('{{ veterinarianClinic }}', $this->veterinarianClinic, $mail);
         $mail = str_replace('{{ veterinarianName }}', $this->veterinarianName, $mail);
         $mail = str_replace('{{ patientName }}', $this->patientName, $mail);
