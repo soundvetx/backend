@@ -59,23 +59,23 @@ class UserRepository
                 ])
             );
 
-            if (array_key_exists('type', $parameters) && $parameters['type'] === UserTypeEnum::VETERINARIAN->value) {
-                if (!$user->veterinarian) {
-                    $user->veterinarian()->create([
-                        'crmv' => $parameters['crmv'],
-                        'uf' => $parameters['uf'],
-                        'created_by' => $parameters['updated_by'],
-                        'updated_by' => $parameters['updated_by'],
-                    ]);
-                } else {
-                    $user->veterinarian()->update([
-                        'crmv' => $parameters['crmv'] ?? $user->veterinarian->crmv,
-                        'uf' => $parameters['uf'] ?? $user->veterinarian->uf,
-                        'updated_by' => $parameters['updated_by'],
-                    ]);
-                }
-            } else {
-                if ($user->veterinarian) {
+            if (array_key_exists('type', $parameters)) {
+                if ($parameters['type'] === UserTypeEnum::VETERINARIAN->value) {
+                    if (!$user->veterinarian) {
+                        $user->veterinarian()->create([
+                            'crmv' => $parameters['crmv'],
+                            'uf' => $parameters['uf'],
+                            'created_by' => $parameters['updated_by'],
+                            'updated_by' => $parameters['updated_by'],
+                        ]);
+                    } else {
+                        $user->veterinarian()->update([
+                            'crmv' => $parameters['crmv'] ?? $user->veterinarian->crmv,
+                            'uf' => $parameters['uf'] ?? $user->veterinarian->uf,
+                            'updated_by' => $parameters['updated_by'],
+                        ]);
+                    }
+                } else if ($user->veterinarian) {
                     $user->veterinarian->delete();
                 }
             }
