@@ -4,21 +4,22 @@ namespace App\Services;
 
 use App\Exceptions\ValidationException;
 use App\Mail\ResetPasswordMail;
-use App\Models\User;
+use App\Repositories\PersonalAccessTokenRepository;
 use App\Utils\Authentication;
 use App\Utils\ExceptionMessage;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class AuthenticationService
 {
+    private $personalAccessTokenRepository;
     private $userService;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserService $userService, PersonalAccessTokenRepository $personalAccessTokenRepository)
     {
         $this->userService = $userService;
+        $this->personalAccessTokenRepository = $personalAccessTokenRepository;
     }
 
     public function signUp(array $parameters)
@@ -62,11 +63,7 @@ class AuthenticationService
             'expires_at' => now()->addDays(1),
         ];
 
-        $token = $user->createToken(
-            $tokenDetails['name'],
-            $tokenDetails['abilities'],
-            $tokenDetails['expires_at'],
-        )->plainTextToken;
+        $token = $this->personalAccessTokenRepository->create($user, $tokenDetails);
 
         return [$user, $token];
     }
@@ -79,9 +76,7 @@ class AuthenticationService
             return false;
         }
 
-        return $user->tokens()
-            ->where('id_personal_access_token', $user->currentAccessToken()->id_personal_access_token)
-            ->delete();
+        return $this->personalAccessTokenRepository->delete($user->currentAccessToken()->id_personal_access_token);
     }
 
     public function forgotPassword(array $parameters)
@@ -104,16 +99,46 @@ class AuthenticationService
         $tokenDetails = [
             'name' => 'password_reset',
             'abilities' => ['*'],
-            'expires_at' => now()->addMinutes(10),
+            'expires_at' => now()->addMinutes(15),
         ];
 
-        $token = $user->createToken(
-            $tokenDetails['name'],
-            $tokenDetails['abilities'],
-            $tokenDetails['expires_at'],
-        )->plainTextToken;
+        [$id, $token] = explode('|', $this->personalAccessTokenRepository->create($user, $tokenDetails), 2);
 
         Mail::to($user->email)->send(new ResetPasswordMail($user, $token));
+
+        return true;
+    }
+
+    public function resetPassword(array $parameters)
+    {
+        $validator = Validator::make($parameters, $this->getValidations('resetPassword'));
+
+        if ($validator->fails()) {
+            throw ValidationException::validator($validator, $this->getErrorCodes('resetPassword'));
+        }
+
+        $resetPasswordToken = $this->personalAccessTokenRepository->findByToken($parameters['token']);
+
+        if (!$resetPasswordToken) {
+            throw new ValidationException('token', 'ER001', new ExceptionMessage([
+                'server' => 'The provided token is invalid or expired.',
+                'client' => 'O token fornecido é inválido ou expirou.',
+            ]));
+        }
+
+        if ($parameters['newPassword'] !== $parameters['confirmNewPassword']) {
+            throw new ValidationException('newPassword', 'ER001', new ExceptionMessage([
+                'server' => 'The password confirmation does not match.',
+                'client' => 'As senhas não coincidem.',
+            ]));
+        }
+
+        $this->userService->updatePassword([
+            'idUser' => $resetPasswordToken->tokenable->id_user,
+            'password' => $parameters['newPassword'],
+        ]);
+
+        $this->personalAccessTokenRepository->delete($resetPasswordToken->id_personal_access_token);
 
         return true;
     }
@@ -144,6 +169,20 @@ class AuthenticationService
                     'email',
                 ],
             ],
+            'resetPassword' => [
+                'token' => [
+                    'required',
+                    'string',
+                ],
+                'newPassword' => [
+                    'required',
+                    'string',
+                ],
+                'confirmNewPassword' => [
+                    'required',
+                    'string',
+                ],
+            ],
             default => [],
         };
     }
@@ -163,6 +202,14 @@ class AuthenticationService
             'forgotPassword' => [
                 'email.required' => 'ER001',
                 'email.email' => 'ER001',
+            ],
+            'resetPassword' => [
+                'token.required' => 'ER001',
+                'token.string' => 'ER001',
+                'newPassword.required' => 'ER001',
+                'newPassword.string' => 'ER001',
+                'confirmNewPassword.required' => 'ER001',
+                'confirmNewPassword.string' => 'ER001',
             ],
             default => [],
         };

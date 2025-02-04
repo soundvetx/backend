@@ -48,7 +48,8 @@ class ResetPasswordMail extends Mailable
 
         $mail = str_replace('{{ logoUrl }}', Storage::url('logos/logo-full-primary.png'), $mail);
         $mail = str_replace('{{ userName }}', $this->user->name, $mail);
-        $mail = str_replace('{{ resetPasswordUrl }}', env('APP_URL') . "/forgot-password?token=$this->token", $mail);
+        $mail = str_replace('{{ token }}', $this->token, $mail);
+        $mail = str_replace('{{ resetPasswordUrl }}', env('APP_URL') . "/reset-password?token=$this->token", $mail);
 
         return new Content(
             view: null,

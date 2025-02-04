@@ -346,6 +346,29 @@ class UserService
         return [$user, $newPassword];
     }
 
+    public function updatePassword(array $parameters) {
+        $validator = Validator::make($parameters, $this->getValidations('updatePassword'));
+
+        if ($validator->fails()) {
+            throw ValidationException::validator($validator, $this->getErrorCodes('updatePassword'));
+        }
+
+        $user = $this->userRepository->find($parameters['idUser']);
+
+        if (!$user) {
+            throw new ResourceNotFoundException('user', new ExceptionMessage([
+                'server' => 'User not found.',
+                'client' => 'Usuário não encontrado.',
+            ]));
+        }
+
+        return $this->userRepository->update([
+            'id_user' => $parameters['idUser'],
+            'password' => Hash::make($parameters['password']),
+            'updated_by' => $parameters['idUser'],
+        ]);
+    }
+
     public function findByEmail(string $email)
     {
         return $this->userRepository->findByEmail($email);
@@ -463,6 +486,16 @@ class UserService
                     'integer',
                 ],
             ],
+            'updatePassword' => [
+                'idUser' => [
+                    'required',
+                    'integer',
+                ],
+                'password' => [
+                    'required',
+                    'string',
+                ],
+            ],
             default => [],
         };
     }
@@ -522,6 +555,12 @@ class UserService
             'resetPassword' => [
                 'idUser.required' => 'ER001',
                 'idUser.integer' => 'ER001',
+            ],
+            'updatePassword' => [
+                'idUser.required' => 'ER001',
+                'idUser.integer' => 'ER001',
+                'password.required' => 'ER001',
+                'password.string' => 'ER001',
             ],
             default => [],
         };
