@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\ValidationException;
 use App\Mail\ResetPasswordMail;
+use App\Models\User;
 use App\Repositories\PersonalAccessTokenRepository;
 use App\Utils\Authentication;
 use App\Utils\ExceptionMessage;
@@ -40,6 +41,39 @@ class AuthenticationService
         return $this->userService->create($parameters);
     }
 
+    private function createAuthenticationToken(User $user)
+    {
+        $tokenDetails = [
+            'name' => 'authentication',
+            'abilities' => ['*'],
+            'expires_at' => now()->addDays(1),
+        ];
+
+        return $this->personalAccessTokenRepository->create($user, $tokenDetails);
+    }
+
+    private function createRefreshToken(User $user)
+    {
+        $refreshTokenDetails = [
+            'name' => 'refresh_token',
+            'abilities' => ['*'],
+            'expires_at' => now()->addDays(2),
+        ];
+
+        return $this->personalAccessTokenRepository->create($user, $refreshTokenDetails);
+    }
+
+    private function createPasswordResetToken(User $user)
+    {
+        $tokenDetails = [
+            'name' => 'password_reset',
+            'abilities' => ['*'],
+            'expires_at' => now()->addMinutes(15),
+        ];
+
+        return $this->personalAccessTokenRepository->create($user, $tokenDetails);
+    }
+
     public function signIn(array $parameters)
     {
         $validator = Validator::make($parameters, $this->getValidations('signIn'));
@@ -57,15 +91,10 @@ class AuthenticationService
             ]));
         }
 
-        $tokenDetails = [
-            'name' => 'authentication',
-            'abilities' => ['*'],
-            'expires_at' => now()->addDays(1),
-        ];
+        $token = $this->createAuthenticationToken($user);
+        $refreshToken = $this->createRefreshToken($user);
 
-        $token = $this->personalAccessTokenRepository->create($user, $tokenDetails);
-
-        return [$user, $token];
+        return [$user, $token, $refreshToken];
     }
 
     public function signOut()
@@ -96,13 +125,7 @@ class AuthenticationService
             ]));
         }
 
-        $tokenDetails = [
-            'name' => 'password_reset',
-            'abilities' => ['*'],
-            'expires_at' => now()->addMinutes(15),
-        ];
-
-        [$id, $token] = explode('|', $this->personalAccessTokenRepository->create($user, $tokenDetails), 2);
+        [, $token] = explode('|', $this->createPasswordResetToken($user), 2);
 
         Mail::to($user->email)->send(new ResetPasswordMail($user, $token));
 
@@ -119,7 +142,7 @@ class AuthenticationService
 
         $resetPasswordToken = $this->personalAccessTokenRepository->findByToken($parameters['token']);
 
-        if (!$resetPasswordToken) {
+        if (!$resetPasswordToken || $resetPasswordToken->name !== 'password_reset' || $resetPasswordToken->expires_at < now()) {
             throw new ValidationException('token', 'ER001', new ExceptionMessage([
                 'server' => 'The provided token is invalid or expired.',
                 'client' => 'O token fornecido é inválido ou expirou.',
@@ -141,6 +164,16 @@ class AuthenticationService
         $this->personalAccessTokenRepository->delete($resetPasswordToken->id_personal_access_token);
 
         return true;
+    }
+
+    public function refreshToken()
+    {
+        $user = Authentication::user();
+
+        $token = $this->createAuthenticationToken($user);
+        $refreshToken = $this->createRefreshToken($user);
+
+        return [$token, $refreshToken];
     }
 
     private function getValidations(string $method)

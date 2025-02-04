@@ -32,7 +32,7 @@ class AuthenticationController extends Controller
 
     public function signIn(Request $request)
     {
-        [$user, $token] = $this->authenticationService->signIn($request->all());
+        [$user, $token, $refreshToken] = $this->authenticationService->signIn($request->all());
 
         return response()->json([
             'message' => [
@@ -42,6 +42,7 @@ class AuthenticationController extends Controller
             'data' => [
                 'user' => new UserResource($user),
                 'token' => $token,
+                'refreshToken' => $refreshToken,
             ],
         ]);
     }
@@ -78,6 +79,22 @@ class AuthenticationController extends Controller
             'message' => [
                 'serverMessage' => 'Password reset successfully.',
                 'clientMessage' => 'Senha redefinida com sucesso.',
+            ],
+        ]);
+    }
+
+    public function refreshToken()
+    {
+        [$token, $refreshToken] = $this->authenticationService->refreshToken();
+
+        return response()->json([
+            'message' => [
+                'serverMessage' => 'Token refreshed successfully.',
+                'clientMessage' => 'Token atualizado com sucesso.',
+            ],
+            'data' => [
+                'token' => $token,
+                'refreshToken' => $refreshToken,
             ],
         ]);
     }

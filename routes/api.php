@@ -16,6 +16,7 @@ Route::middleware(EnsureParametersCase::class)->group(function () {
 
         Route::middleware(Authenticate::class)->group(function () {
             Route::post('/sign-out', [AuthenticationController::class, 'signOut']);
+            Route::post('/refresh-token', [AuthenticationController::class, 'refreshToken']);
         });
     });
 
