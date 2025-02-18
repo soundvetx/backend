@@ -152,4 +152,15 @@ class UserRepository
             ->whereRaw("LOWER(`name`) COLLATE utf8mb4_general_ci LIKE ?", ['%' . strtolower($name) . '%'])
             ->get();
     }
+
+    public function findVeterinarianByCrmv(string $crmv, string $uf): ?User
+    {
+        return User::where('is_active', 1)
+            ->where('type', UserTypeEnum::VETERINARIAN->value)
+            ->whereHas('veterinarian', function ($query) use ($crmv, $uf) {
+                $query->where('crmv', $crmv)
+                    ->where('uf', $uf);
+            })
+            ->first();
+    }
 }

@@ -95,8 +95,19 @@ class UserService
         if ($user) {
             throw new ValidationException('email', 'ER001', new ExceptionMessage([
                 'server' => 'The email has already been taken.',
-                'client' => 'O e-mail já foi utilizado.',
+                'client' => 'O e-mail informado já está sendo utilizado.',
             ]));
+        }
+
+        if ($parameters['type'] === UserTypeEnum::VETERINARIAN->value) {
+            $user = $this->userRepository->findVeterinarianByCrmv($parameters['crmv'], $parameters['uf']);
+
+            if ($user) {
+                throw new ValidationException('crmv', 'ER001', new ExceptionMessage([
+                    'server' => 'The CRMV has already been taken.',
+                    'client' => 'O CRMV informado já está sendo utilizado.',
+                ]));
+            }
         }
 
         return $this->userRepository->create([
